@@ -1,0 +1,82 @@
+﻿@page "/"
+
+@using GanttEF.Models
+@using Syncfusion.Blazor.Gantt
+@using Syncfusion.Blazor.Data
+@using Syncfusion.Blazor
+
+
+<SfGantt ID="GanttExport" TValue="GanttData" Height="450px" Width="700px"
+         Toolbar="@(new List<string>(){ "Add", "Edit", "Update", "Delete", "Cancel", "ExpandAll", "CollapseAll"})">
+    <SfDataManager AdaptorInstance="@typeof(CustomAdaptor)" Adaptor="Adaptors.CustomAdaptor"></SfDataManager>   
+    <GanttColumns>
+        <GanttColumn Field=@nameof(GanttData.Id) Width="100"></GanttColumn>
+        <GanttColumn Field=@nameof(GanttData.Name) Width="250"></GanttColumn>
+        <GanttColumn Field=@nameof(GanttData.Sdate)></GanttColumn>
+        <GanttColumn Field=@nameof(GanttData.Edate)></GanttColumn>
+        <GanttColumn Field=@nameof(GanttData.Progress)></GanttColumn>
+    </GanttColumns>
+    <GanttEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" AllowTaskbarEditing="true" ShowDeleteConfirmDialog="true" NewRowPosition="RowPosition.Child"></GanttEditSettings>
+    <GanttTimelineSettings>
+        <GanttTopTierSettings Unit="TimelineViewMode.Week" Format="MMM dd, y"></GanttTopTierSettings>
+        <GanttBottomTierSettings Unit="TimelineViewMode.Day"></GanttBottomTierSettings>
+    </GanttTimelineSettings>
+    <GanttTaskFields Id="Id" Name="Name" StartDate="Sdate" EndDate="Edate" Progress="Progress"
+                     ParentID="ParentId"></GanttTaskFields>
+</SfGantt>
+
+@code {
+    // Implementing custom adaptor by extending the DataAdaptor class
+    public class CustomAdaptor : DataAdaptor
+    {
+        masterContext db = new masterContext();
+        // Performs data Read operation
+        public override object Read(DataManagerRequest dm, string key = null)
+        {
+            IEnumerable<GanttData> DataSource = db.GanttData;
+            int count = DataSource.Cast<GanttData>().Count();
+            return dm.RequiresCounts ? new DataResult() { Result = DataSource, Count = count } : (object)DataSource;
+        }
+
+        // Performs CRUD operation
+        public override object BatchUpdate(DataManager dm, object changedRecords, object addedRecords, object deletedRecords, string keyField, string key, int? dropIndex)
+        {
+            List<GanttData> addRecord = addedRecords as List<GanttData>;
+            List<GanttData> changed = changedRecords as List<GanttData>;
+            List<GanttData> deleteRecord = deletedRecords as List<GanttData>;
+            if (changed != null)
+            {
+                for (var i = 0; i < changed.Count(); i++)
+                {
+                    var value = changed[i];
+                    GanttData result = db.GanttData.Where(or => or.Id == value.Id).FirstOrDefault();
+                    result.Id = value.Id;
+                    result.Name = value.Name;
+                    result.Sdate = value.Sdate;
+                    result.Edate = value.Edate;
+                    result.Progress = value.Progress;
+                    db.SaveChanges();
+                }
+            }
+            if (deleteRecord != null)
+            {
+                for (var i = 0; i < deleteRecord.Count(); i++)
+                {
+                    db.GanttData.Remove(db.GanttData.Where(or => or.Id == deleteRecord[i].Id).FirstOrDefault());
+                    db.SaveChanges();
+                }
+            }
+            if (addRecord != null)
+            {
+                for (var i = 0; i < addRecord.Count(); i++)
+                {
+                    db.GanttData.Add(addRecord[i] as GanttData);
+                    db.SaveChanges();
+                }
+            }
+            return (new { addedRecords = addRecord, changedRecords = changed, deletedRecords = deleteRecord });
+        }
+    }
+}
+
+
