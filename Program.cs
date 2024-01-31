@@ -2,7 +2,6 @@ using GanttEF.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Syncfusion.Blazor;
-Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NAaF5cWWVCfEx0RHxbf1x0ZFREalxQTnNeUiweQnxTdEFjWH1dcHFXRGRUVUZxWQ==");
 
 var builder = WebApplication.CreateBuilder(args);
 
