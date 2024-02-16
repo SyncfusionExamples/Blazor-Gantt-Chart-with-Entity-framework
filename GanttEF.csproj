@@ -12,8 +12,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Syncfusion.Blazor.Gantt" Version="24.1.46" />
-    <PackageReference Include="Syncfusion.Blazor.Themes" Version="24.1.47" />
+    <PackageReference Include="Syncfusion.Blazor.Gantt" Version="24.2.6" />
+    <PackageReference Include="Syncfusion.Blazor.Themes" Version="24.2.6" />
   </ItemGroup>
 
 </Project>
